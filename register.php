@@ -1,6 +1,6 @@
 <?php
-require_once 'User.php';
-$user = new User();
+require_once 'user.php';
+$user = new user();
 $message = "";
 
 if(isset($_POST['register'])) {
@@ -158,3 +158,4 @@ if(isset($_POST['register'])) {
     </script>
 </body>
 </html>
+
