@@ -8,7 +8,7 @@ session_start();
 if(!isset($_SESSION['user_id'])) header("Location: login.php");
 
 require_once 'Product.php';
-require_once 'cart_page.php';
+require_once 'cart.php';
 include 'header.php';
 
 $productObj = new Product();
@@ -135,5 +135,6 @@ $products = $productObj->getAll();
 
 </body>
 </html>
+
 
 
