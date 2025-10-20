@@ -5,7 +5,7 @@ error_reporting(E_ALL);
 ?>
 <?php
 session_start();
-require_once 'User.php';
+require_once 'user.php';
 $user = new User();
 $message = "";
 
@@ -150,4 +150,5 @@ if(isset($_POST['login'])) {
     </script>
 </body>
 </html>
+
 
