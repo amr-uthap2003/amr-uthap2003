@@ -1,4 +1,9 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+?>
+<?php
 // Start session only if not already started
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -24,3 +29,4 @@ if (session_status() == PHP_SESSION_NONE) {
     </div>
 </nav>
 <hr style="margin:0; border:1px solid #ddd;">
+
