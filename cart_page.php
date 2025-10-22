@@ -7,9 +7,9 @@ error_reporting(E_ALL);
 session_start();
 if(!isset($_SESSION['user_id'])) header("Location: login.php");
 
-require_once 'Cart.php';
-require_once 'Order.php';
-require_once 'Product.php';
+require_once 'cart.php';
+require_once 'order.php';
+require_once 'product.php';
 include 'header.php';
 
 $cart = new Cart();
@@ -129,6 +129,7 @@ document.getElementById('payButton')?.addEventListener('click', function(){
     rzp.open();
 });
 </script>
+
 
 
 
