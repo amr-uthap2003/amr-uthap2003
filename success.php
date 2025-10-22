@@ -1,11 +1,18 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+session_start();
+?>
+
+<?php
 session_start();
 if(!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
-require_once 'Cart.php';
+require_once 'cart.php';
 require_once 'Order.php';
 
 $cart = new Cart();
@@ -58,3 +65,4 @@ $cart->clearCart();
     </div>
 </body>
 </html>
+
