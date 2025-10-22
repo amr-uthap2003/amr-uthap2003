@@ -2,15 +2,18 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-?>
-<?php
-session_start();
-if(!isset($_SESSION['user_id'])) header("Location: login.php");
 
-require_once 'cart.php';
-require_once 'order.php';
-require_once 'product.php';
-include 'header.php';
+session_start();
+if(!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
+// Safe includes using __DIR__ to avoid path issues
+require_once __DIR__ . '/Cart.php';
+require_once __DIR__ . '/Order.php';
+require_once __DIR__ . '/Product.php';
+include __DIR__ . '/header.php';
 
 $cart = new Cart();
 $orderObj = new Order();
@@ -55,18 +58,18 @@ if(isset($_POST['update'])) {
                     $total += $itemTotal;
                 ?>
                 <tr>
-                    <td><?php echo $item['name']; ?></td>
-                    <td class="price">₹<?php echo $item['price']; ?></td>
+                    <td><?php echo htmlspecialchars($item['name']); ?></td>
+                    <td class="price">₹<?php echo number_format($item['price'], 2); ?></td>
                     <td>
                         <input type="number" name="quantities[<?php echo $item['id']; ?>]" value="<?php echo $item['quantity']; ?>" min="1" style="width:60px;text-align:center;" class="qtyInput">
                     </td>
-                    <td class="itemTotal">₹<?php echo $itemTotal; ?></td>
+                    <td class="itemTotal">₹<?php echo number_format($itemTotal, 2); ?></td>
                     <td><a href="?remove=<?php echo $item['id']; ?>" style="color:red;text-decoration:none;">Remove</a></td>
                 </tr>
                 <?php endforeach; ?>
                 <tr>
                     <td colspan="3" style="text-align:right; font-weight:bold;">Total:</td>
-                    <td colspan="2" id="grandTotal" style="font-weight:bold;">₹<?php echo $total; ?></td>
+                    <td colspan="2" id="grandTotal" style="font-weight:bold;">₹<?php echo number_format($total, 2); ?></td>
                 </tr>
             </table>
             <br>
@@ -89,36 +92,42 @@ function updateTotals() {
         const qtyInput = row.querySelector('.qtyInput');
         const itemTotalCell = row.querySelector('.itemTotal');
         if(priceCell && qtyInput && itemTotalCell){
-            const price = parseFloat(priceCell.textContent.replace('₹',''));
-            const qty = parseInt(qtyInput.value);
+            const price = parseFloat(priceCell.textContent.replace('₹','').replace(/,/g, '')) || 0;
+            const qty = parseInt(qtyInput.value) || 0;
             const itemTotal = price * qty;
-            itemTotalCell.textContent = '₹' + itemTotal;
+            itemTotalCell.textContent = '₹' + itemTotal.toFixed(2);
             total += itemTotal;
         }
     });
-    document.getElementById('grandTotal').textContent = '₹' + total;
+    document.getElementById('grandTotal').textContent = '₹' + total.toFixed(2);
     return total;
 }
 
 // Update totals live when quantity changes
 document.querySelectorAll('.qtyInput').forEach(function(input){
-    input.addEventListener('change', updateTotals);
+    input.addEventListener('input', updateTotals);
 });
 
+// Razorpay payment
 document.getElementById('payButton')?.addEventListener('click', function(){
     const total = updateTotals(); // ensure latest total
+    if(total <= 0){
+        alert("Your cart is empty or invalid!");
+        return;
+    }
+
     var options = {
         "key": "rzp_test_1TSGXPk46TbXBv", // your Razorpay test key
-        "amount": total * 100, // amount in paise
+        "amount": Math.round(total * 100), // amount in paise
         "currency": "INR",
         "name": "Kitchenware Store",
         "description": "Order Payment",
         "handler": function (response){
             // After payment, redirect to success page with Razorpay payment id and amount
-            window.location.href = "success.php?payment_id=" + response.razorpay_payment_id + "&amount=" + total;
+            window.location.href = "success.php?payment_id=" + response.razorpay_payment_id + "&amount=" + total.toFixed(2);
         },
         "prefill": {
-            "name": "<?php echo $_SESSION['username']; ?>",
+            "name": "<?php echo addslashes($_SESSION['username']); ?>",
             "email": "customer@example.com"
         },
         "theme": {
@@ -129,7 +138,3 @@ document.getElementById('payButton')?.addEventListener('click', function(){
     rzp.open();
 });
 </script>
-
-
-
-
