@@ -10,7 +10,7 @@ if(!isset($_SESSION['user_id'])) {
 }
 
 // Safe includes using __DIR__ to avoid path issues
-require_once __DIR__ . '/Cart.php';
+require_once __DIR__ . '/cart.php';
 require_once __DIR__ . '/Order.php';
 require_once __DIR__ . '/Product.php';
 include __DIR__ . '/header.php';
@@ -138,3 +138,4 @@ document.getElementById('payButton')?.addEventListener('click', function(){
     rzp.open();
 });
 </script>
+
